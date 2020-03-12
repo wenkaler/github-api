@@ -94,18 +94,14 @@ func encoder(_ context.Context, r *http.Request, request interface{}) error {
 	return nil
 }
 
-type fileResponse struct {
-	message string
-}
-
 func decoder(_ context.Context, r *http.Response) (response interface{}, err error) {
 	if r.StatusCode < 200 || r.StatusCode > 299 {
-		f := fileResponse{}
-		err := json.NewDecoder(r.Body).Decode(&f)
+		text, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			return nil, err
 		}
-		return nil, fmt.Errorf("failed response: %v", f.message)
+		defer r.Body.Close()
+		return nil, fmt.Errorf("failed response: %s", text)
 	}
 	return nil, nil
 }

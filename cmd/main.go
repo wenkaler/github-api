@@ -45,12 +45,13 @@ func main() {
 		os.Exit(1)
 	}
 	task := func() {
-		date := time.Now().Format("02.01.2006")
-		err := c.CreateFile(context.Background(), date, cfg.Name, cfg.Email, date, date)
+		date := time.Now().Format("2006/01/02")
+		err := c.CreateFile(context.Background(), "data/"+date, cfg.Name, cfg.Email, date, date)
 		if err != nil {
 			level.Error(logger).Log("msg", "failed create file", "err", err)
 		}
 	}
+	task()
 	gocron.Every(1).Days().At(cfg.Time).Do(task)
 	cronCh := gocron.Start()
 	cl := make(chan os.Signal, 1)
